@@ -34,7 +34,7 @@ Add unit tests
 ## Datasets
 
 The dataset of male players has been sourced from [Kaggle](https://www.kaggle.com/datasets/stefanoleone992/fifa-23-complete-player-dataset?resource=download&select=male_players.csv)
-The male players file has been split from the original to only contain 1GB. 
+The male players file has been split from the original to only contain 100MB. 
 
 ## Formatting 
 

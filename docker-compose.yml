@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_DB=etl
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  rabbitmq:
+    image: "rabbitmq:management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  api:
+    build: .
+    command: gunicorn django_etl.asgi:application --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker --workers 2 --log-file=- --log-level debug
+    environment:
+      - POSTGRES_DB_USER=user
+      - POSTGRES_DB_NAME=etl
+      - POSTGRES_DB_PASSWORD=password
+      - POSTGRES_DB_HOST=db
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - rabbitmq
+    restart: unless-stopped
+
+  worker:
+    build: .
+    command: celery -A django_etl worker --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - rabbitmq

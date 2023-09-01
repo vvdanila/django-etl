@@ -4,7 +4,7 @@ A Django project run in Docker that allows the processing of large datasets by u
 
 ## Introduction
 
-The data ingestion is chucked and saved in batched to the database following a wait time between chunks.
+The data ingestion is chunked and saved in batches to the database following a wait time between chunks.
 
 ## Triggering the data processing
 
